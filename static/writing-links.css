@@ -1,0 +1,33 @@
+#writing-linked-workspace[hidden] { display: none !important; }
+#writing-linked-workspace { display: grid; grid-template-columns: minmax(0, var(--writing-link-left, 50%)) 10px minmax(0, 1fr); height: 100%; min-height: 0; min-width: 0; }
+.writing-link-reference { display: flex; flex-direction: column; min-height: 0; min-width: 0; overflow: hidden; background: var(--paper); border: 1px solid var(--line); border-radius: 17px; }
+.writing-link-reference-bar { display: flex; gap: 10px; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--bg); }
+.writing-link-reference-bar strong { flex: 1; min-width: 0; overflow-wrap: anywhere; font-size: .9rem; }
+.writing-link-reference-bar .button { flex: none; padding: 6px 10px; font-size: .8rem; }
+#writing-link-reference-body { flex: 1; min-height: 0; overflow: auto; padding: 22px; }
+#writing-link-right { min-height: 0; min-width: 0; overflow: hidden; padding-left: 6px; }
+#writing-link-right .writing-view { height: 100%; min-height: 0; }
+#writing-link-right .writing-heading { flex-wrap: wrap; gap: 6px; }
+#writing-link-right .writing-heading h1 { font-size: 1.15rem; }
+#writing-link-right .writing-heading-actions { flex-wrap: wrap; }
+#writing-link-right .writing-heading-actions .button { font-size: .75rem; min-height: 30px; padding: 4px 8px; }
+#writing-link-right #writing-format-tools.writing-menu-tools { flex: 1 0 100%; flex-wrap: wrap; }
+#writing-link-right #writing-format-tools.writing-menu-tools .app-select { flex: 1 1 80px; min-width: 68px; }
+#writing-link-right .writing-save-tools { margin-left: auto; }
+#writing-link-right .writing-editors.with-preview { flex-direction: column; }
+#writing-link-right .with-preview .writing-markdown-editor { flex: 1 1 50%; min-height: 30%; }
+#writing-link-right .with-preview #writing-source { width: 100%; min-height: 35%; }
+#writing-link-right .writing-preview { min-height: 35%; border-left: 0; border-top: 1px solid var(--line); padding: 18px; }
+#writing-link-divider { display: grid; place-items: center; cursor: col-resize; touch-action: none; }
+#writing-link-divider::after { content: ""; width: 3px; height: 50px; border-radius: 3px; background: var(--line); }
+#writing-link-divider:hover::after, #writing-link-divider:focus-visible::after { background: var(--green); }
+.writing-linked-entry { display: block; width: 100%; text-align: left; margin-bottom: 8px; overflow-wrap: anywhere; }
+.writing-linked-pdf { display: block; width: 100%; height: auto; margin: 12px 0; }
+#writing-link-dialog, #writing-link-external { width: min(650px, calc(100vw - 32px)); padding: 22px; max-height: calc(100vh - 32px); overflow: auto; }
+#writing-link-dialog .field { display: flex; flex-direction: column; gap: 7px; margin: 14px 0; }
+#writing-link-dialog input { width: 100%; min-width: 0; }
+#writing-link-dialog summary { cursor: pointer; padding: 10px 0; }
+#writing-link-search { margin: 8px 0; }
+#writing-link-choices { display: flex; flex-direction: column; gap: 6px; max-height: 28vh; overflow: auto; }
+#writing-link-external-path { padding: 12px; border-radius: 8px; background: var(--green-soft); overflow-wrap: anywhere; }
+.writing-linked-buttons { display: flex; justify-content: flex-end; gap: 10px; }

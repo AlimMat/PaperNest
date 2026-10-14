@@ -1,0 +1,36 @@
+﻿# Create the EzRead shortcut for the current Windows user.
+$ErrorActionPreference = 'Stop'
+$taskAppRoot = $PSScriptRoot
+$taskLauncher = Join-Path $taskAppRoot '启动PaperNest.vbs'
+$taskIcon = Join-Path $taskAppRoot 'static\papernest.ico'
+if (!(Test-Path -LiteralPath $taskLauncher) -or !(Test-Path -LiteralPath $taskIcon)) {
+    throw 'PaperNest launcher or icon is missing. Keep the complete application folder together.'
+}
+# A content-specific filename prevents Windows from reusing the previous artwork.
+$taskIconHash = (Get-FileHash -LiteralPath $taskIcon -Algorithm SHA256).Hash.ToLowerInvariant()
+$taskIconCache = Join-Path $taskAppRoot 'work\shortcut-icons'
+New-Item -ItemType Directory -Path $taskIconCache -Force | Out-Null
+$taskDesktopIcon = Join-Path $taskIconCache ('papernest-' + $taskIconHash + '.ico')
+Copy-Item -LiteralPath $taskIcon -Destination $taskDesktopIcon -Force
+$taskDesktop = [Environment]::GetFolderPath('Desktop')
+$taskShortcutPath = Join-Path $taskDesktop 'PaperNest.lnk'
+$taskShell = New-Object -ComObject WScript.Shell
+$taskShortcut = $taskShell.CreateShortcut($taskShortcutPath)
+$taskShortcut.TargetPath = Join-Path $env:WINDIR 'System32\wscript.exe'
+$taskShortcut.Arguments = '"' + $taskLauncher + '"'
+$taskShortcut.WorkingDirectory = $taskAppRoot
+$taskShortcut.IconLocation = $taskDesktopIcon + ',0'
+$taskShortcut.Description = 'PaperNest'
+$taskShortcut.WindowStyle = 7
+$taskShortcut.Save()
+$taskCheck = $taskShell.CreateShortcut($taskShortcutPath)
+if ($taskCheck.TargetPath -ne $taskShortcut.TargetPath -or $taskCheck.Arguments -ne $taskShortcut.Arguments -or $taskCheck.IconLocation -ne $taskShortcut.IconLocation) {
+    throw 'The saved desktop shortcut failed verification.'
+}
+[PSCustomObject]@{
+    Shortcut = $taskShortcutPath
+    Target = $taskCheck.TargetPath
+    Arguments = $taskCheck.Arguments
+    WorkingDirectory = $taskCheck.WorkingDirectory
+    Icon = $taskCheck.IconLocation
+}

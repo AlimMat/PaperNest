@@ -1,0 +1,286 @@
+:root {
+  --ui-font-size: 16px;
+  --reader-font-size: 18px;
+  --system-font: "Microsoft YaHei UI", "Microsoft YaHei", "Segoe UI", sans-serif;
+  --bg: #f4f6f6;
+  --paper: #fff;
+  --ink: #1f2e32;
+  --text: #35464b;
+  --muted: #66777c;
+  --line: #dce4e6;
+  --green: #246d7a;
+  --on-accent: #fff;
+  --green-soft: #e3f0f3;
+  --side: #edf2f3;
+  --surface-subtle: #f0f4f5;
+  --field-bg: #fff;
+  --reader-paper: #fff;
+  --pdf-backdrop: #d9dfe1;
+  --shadow: 0 5px 22px #20363d0a;
+  --danger: #ac493f;
+  --danger-soft: #fbefec;
+  --danger-border: #ecc4bc;
+  color-scheme: light;
+}
+:root[data-theme="sage"] {
+  --bg: #edf3ec;
+  --paper: #f9fcf7;
+  --ink: #273d2d;
+  --text: #435947;
+  --muted: #6b806c;
+  --line: #d3dfd0;
+  --green: #416e4c;
+  --green-soft: #e0ecdc;
+  --side: #e4ede0;
+  --surface-subtle: #eaf2e7;
+  --field-bg: #f9fcf7;
+  --reader-paper: #f4faf0;
+  --pdf-backdrop: #d0dccb;
+  --shadow: 0 5px 22px #203c220b;
+}
+:root[data-theme="graphite"] {
+  --bg: #191d22;
+  --paper: #242a31;
+  --ink: #edf1f5;
+  --text: #d1d9e1;
+  --muted: #9ba8b5;
+  --line: #3c4651;
+  --green: #83bdd0;
+  --on-accent: #102a35;
+  --green-soft: #2a404c;
+  --side: #20262c;
+  --surface-subtle: #2a323b;
+  --field-bg: #1e252c;
+  --reader-paper: #212831;
+  --pdf-backdrop: #12161b;
+  --shadow: 0 5px 22px #0003;
+  --danger: #e28b80;
+  --danger-soft: #482e2d;
+  --danger-border: #75443d;
+  color-scheme: dark;
+}
+.rank-badge {
+  display: inline-block;
+  border: 1px solid color-mix(in srgb, var(--badge-color, var(--muted)) 55%, var(--line));
+  color: color-mix(in srgb, var(--badge-color, var(--text)) 70%, var(--ink));
+  background: color-mix(in srgb, var(--badge-color, var(--line)) 13%, var(--paper));
+  border-radius: 5px;
+  padding: 0.12rem 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 650;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+.rank-conference {
+  --badge-color: #b76e42;
+}
+.rank-preprint {
+  --badge-color: #559ebf;
+}
+[data-theme="graphite"] .rank-conference {
+  --badge-color: #e3a584;
+}
+[data-theme="graphite"] .rank-preprint {
+  --badge-color: #a8d5ed;
+}
+.cover-media {
+  min-height: 160px;
+}
+[data-page-hidden="true"] .paper-card *,
+[data-page-hidden="true"] .paper-card :before {
+  animation-play-state: paused !important;
+  will-change: auto !important;
+}
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+.theme-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.6rem;
+  border: 2px solid transparent;
+  border-radius: 9px;
+  background: var(--surface-subtle);
+  font-size: 0.85rem;
+  color: var(--text);
+}
+.theme-choice.selected {
+  border-color: var(--green);
+}
+.theme-swatch {
+  width: 100%;
+  height: 2.7rem;
+  border-radius: 5px;
+  border: 1px solid #0002;
+  display: flex;
+  gap: 8%;
+  padding: 12%;
+}
+.theme-swatch:before {
+  content: "";
+  width: 22%;
+  height: 100%;
+  background: currentColor;
+  opacity: 0.2;
+  border-radius: 2px;
+}
+.theme-swatch:after {
+  content: "";
+  width: 66%;
+  height: 65%;
+  background: currentColor;
+  opacity: 0.13;
+  border-radius: 2px;
+}
+.theme-choice[data-theme-choice="paper"] .theme-swatch {
+  background: #f4f6f6;
+  color: #246d7a;
+}
+.theme-choice[data-theme-choice="sage"] .theme-swatch {
+  background: #edf3ec;
+  color: #416e4c;
+}
+.theme-choice[data-theme-choice="graphite"] .theme-swatch {
+  background: #242a31;
+  color: #d1d9e1;
+}
+.preference-control {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin: 0.85rem 0;
+}
+.preference-control > label {
+  flex: 1;
+  min-width: 9rem;
+}
+.preference-control input[type="range"] {
+  width: 10rem;
+  max-width: 50%;
+  accent-color: var(--green);
+}
+.preference-control output {
+  min-width: 3.8rem;
+  text-align: right;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+.preference-control input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--green);
+}
+.preference-preview {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--reader-paper);
+  padding: 0.8rem 1rem;
+  margin-top: 0.9rem;
+  font-family: var(--system-font);
+  font-size: var(--reader-font-size);
+  line-height: 1.8;
+}
+.preference-status {
+  margin-top: 1rem;
+}
+.preference-status .save-hint {
+  margin: 0;
+}
+.usage-panel {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+}
+.usage-panel h3 {
+  font-size: 1.05rem;
+}
+.usage-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.65rem;
+}
+.usage-note {
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.usage-bucket {
+  border-top: 1px solid var(--line);
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+}
+.usage-bucket h4 {
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+.usage-windows {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.7rem;
+}
+.usage-window {
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-subtle);
+  font-size: 0.875rem;
+}
+.usage-window-title {
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+.usage-numbers {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+.usage-window .progress-track {
+  height: 6px;
+  margin: 0.55rem 0;
+}
+.usage-reset {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.usage-stale {
+  border-color: color-mix(in srgb, #a57a35 65%, var(--line));
+}
+.usage-stamp {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.8rem;
+  line-height: 1.7;
+}
+.settings-dialog-wide {
+  width: 760px;
+}
+@media (max-width: 600px) {
+  .usage-windows {
+    grid-template-columns: 1fr;
+  }
+  .preference-control > label {
+    min-width: 100%;
+  }
+  .preference-control input[type="range"] {
+    flex: 1;
+    max-width: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .paper-card {
+    transform: none !important;
+  }
+}

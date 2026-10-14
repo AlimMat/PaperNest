@@ -1,0 +1,61 @@
+const { chromium } = require(process.env.EZREAD_PLAYWRIGHT || 'playwright');
+const assert = require('node:assert/strict');
+const path = require('node:path');
+const fs = require('node:fs');
+(async () => {
+  const browser = await chromium.launch({ headless: true, executablePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe' });
+  const page = await browser.newPage({ viewport: { width: 1440, height: 960 } });
+  const errors = []; page.on('pageerror', error => errors.push(error.message));
+  const width = () => page.locator('#sidebar').evaluate(node => node.getBoundingClientRect().width);
+  const waitWidth = value => page.waitForFunction(value => Math.abs(document.querySelector('#sidebar').getBoundingClientRect().width - value) < 1, value);
+  const drag = async target => {
+    const box = await page.locator('#sidebar-resize').boundingBox();
+    const start = await width();
+    await page.mouse.move(box.x + box.width / 2, box.y + 70);
+    await page.mouse.down(); await page.mouse.move(box.x + box.width / 2 + target - start, box.y + 70, { steps: 8 }); await page.mouse.up();
+    await waitWidth(target);
+  };
+  try {
+    await page.goto(process.env.EZREAD_TEST_URL); await page.waitForFunction(() => !state.loading);
+    await drag(280);
+    assert.equal(await page.evaluate(() => localStorage.getItem('ezread-reading-sidebar-width')), '280');
+    await page.locator('#mode-writing').click();
+    await page.waitForFunction(() => writingState.mode === 'writing' && !writingState.busy);
+    await waitWidth(184);
+    assert.ok(Math.abs(await width() - 184) < 1, 'Writing keeps its default rather than inheriting reading width');
+    await page.evaluate(async () => {
+      await writingRequest({ operation: 'create', path: '侧栏宽度验证.md' });
+      await writingRefresh(); await writingOpen('侧栏宽度验证.md');
+      writingMarkdown.editor.setValue(Array.from({ length: 100 }, (_, i) => `正文 ${i}`).join('\n'));
+      await writingFlush();
+      const cm = writingMarkdown.editor; cm.setCursor({ line: 80, ch: 4 }); cm.scrollIntoView({ line: 80, ch: 0 }, 80);
+    });
+    const before = await page.evaluate(() => ({ text: writingMarkdown.editor.getValue(), cursor: writingMarkdown.editor.getCursor(), scroll: writingMarkdown.editor.getScrollInfo().top, editor: document.querySelector('.CodeMirror') }));
+    await drag(320);
+    assert.equal(await page.evaluate(() => localStorage.getItem('ezread-writing-sidebar-width')), '320');
+    assert.equal(await page.evaluate(() => writingMarkdown.editor.getValue()), before.text);
+    assert.deepEqual(await page.evaluate(() => writingMarkdown.editor.getCursor()), before.cursor);
+    assert.ok(Math.abs(await page.evaluate(() => writingMarkdown.editor.getScrollInfo().top) - before.scroll) < 2);
+    const output = path.join(process.env.EZREAD_TEST_ROOT, 'work/collection-verification'); fs.mkdirSync(output, { recursive: true });
+    await page.screenshot({ path: path.join(output, 'writing-sidebar-resized.png') });
+    await page.locator('#writing-sidebar-toggle').click();
+    await page.waitForFunction(() => document.querySelector('#sidebar').getBoundingClientRect().width < 100);
+    assert.equal(await page.locator('#sidebar-resize').isVisible(), false);
+    await page.locator('#writing-sidebar-toggle').click(); await waitWidth(320);
+    await page.locator('#mode-reading').click(); await waitWidth(280);
+    await page.locator('#sidebar-resize').focus(); await page.keyboard.press('ArrowRight'); await waitWidth(290);
+    await page.keyboard.press('ArrowLeft'); await waitWidth(280);
+    await page.reload(); await page.waitForFunction(() => !state.loading); await waitWidth(280);
+    await page.locator('#mode-writing').click(); await waitWidth(320);
+    await page.evaluate(() => writingOpen('侧栏宽度验证.md'));
+    assert.equal(await page.evaluate(() => writingMarkdown.editor.getValue()), before.text);
+    await page.setViewportSize({ width: 700, height: 720 }); await waitWidth(315);
+    assert.equal(await page.evaluate(() => localStorage.getItem('ezread-writing-sidebar-width')), '320', 'Narrow display does not replace saved width');
+    await page.setViewportSize({ width: 1440, height: 960 }); await waitWidth(320);
+    await page.locator('#mode-reading').click(); await waitWidth(280);
+    await page.screenshot({ path: path.join(output, 'reading-sidebar-resized.png') });
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false);
+    assert.deepEqual(errors, []);
+    console.log('Sidebar resizing passed: pointer/keyboard, independent widths, reload, collapse/restore, narrow clamp, source/cursor/scroll preservation.');
+  } finally { await browser.close(); }
+})().catch(error => { console.error(error); process.exitCode = 1; });

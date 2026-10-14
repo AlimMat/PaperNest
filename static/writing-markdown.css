@@ -1,0 +1,48 @@
+.writing-toolbar:has(.writing-menu-tools) { align-items: start; flex-wrap: wrap; }
+#writing-format-tools.markdown-tools { flex: 1; min-width: 0; gap: 5px 4px; }
+.markdown-tools .app-select { width: 94px; min-width: 78px; flex: 1 1 94px; }
+.markdown-tools .app-select:first-child { width: 108px; }
+.markdown-tools .app-select-trigger { min-height: 30px; font-size: .8rem; padding: 5px 9px; }
+.markdown-tools .button { white-space: nowrap; background: var(--paper); color: var(--text); }
+.writing-save-tools { flex: none; min-width: 0; max-width: 100%; }
+.writing-markdown-editor { flex: 1; min-width: 0; height: 100%; overflow: hidden; }
+.writing-markdown-editor .CodeMirror { width: 100%; height: 100%; background: var(--paper); color: var(--text); font: .95rem/1.85 Consolas, "Microsoft YaHei", monospace; }
+.writing-markdown-editor .CodeMirror { font-size: calc(.95rem * var(--writing-scale, 1)); }
+.writing-markdown-editor .CodeMirror-lines { padding: 22px 0 70px; }
+.writing-markdown-editor .CodeMirror pre.CodeMirror-line, .writing-markdown-editor .CodeMirror pre.CodeMirror-line-like { padding: 0 18px; }
+.writing-markdown-editor .CodeMirror-gutters { background: var(--paper); border-right: 1px solid var(--line); }
+.writing-markdown-editor .CodeMirror-linenumber { color: var(--muted); padding: 0 8px; font-size: calc(.75rem * var(--writing-scale, 1)); }
+.writing-markdown-editor .CodeMirror-cursor { border-left-color: var(--text); }
+.writing-markdown-editor .CodeMirror-selected { background: var(--green-soft); }
+.writing-markdown-editor .CodeMirror-focused .CodeMirror-selected { background: color-mix(in srgb, var(--green) 25%, var(--paper)); }
+.writing-markdown-editor .cm-header { color: var(--green); font-weight: 650; }
+.writing-markdown-editor .cm-link, .writing-markdown-editor .cm-url { color: var(--green); }
+.writing-markdown-editor .cm-comment { color: var(--muted); }
+.writing-image-fold { display: inline-block; border: 1px solid var(--line); border-radius: 7px; padding: 1px 7px; background: var(--green-soft); color: var(--green); font: calc(.78rem * var(--writing-scale, 1))/1.7 var(--system-font); vertical-align: baseline; white-space: nowrap; cursor: pointer; }
+.writing-image-fold:focus-visible { outline: 2px solid var(--green); }
+.writing-markdown-content { font-size: 1rem; line-height: 1.85; overflow-wrap: anywhere; zoom: var(--writing-scale, 1); }
+.writing-markdown-content > :first-child { margin-top: 0; }
+.writing-markdown-content :is(p, ul, ol, blockquote, pre, table) { margin: .85em 0; }
+.writing-markdown-content :is(h1,h2,h3,h4,h5,h6) { margin: 1.2em 0 .5em; color: var(--ink); line-height: 1.45; }
+.writing-markdown-content h1 { font-size: 1.8em; }
+.writing-markdown-content h2 { font-size: 1.5em; }
+.writing-markdown-content h3 { font-size: 1.25em; }
+.writing-markdown-content h4 { font-size: 1.1em; }
+.writing-markdown-content h5 { font-size: 1em; }
+.writing-markdown-content h6 { font-size: .9em; }
+.writing-markdown-content img { display: block; max-width: 100%; height: auto; max-height: 70vh; object-fit: contain; border-radius: 7px; margin: 12px auto; }
+.writing-markdown-content blockquote { border-left: 3px solid var(--green); padding: 2px 16px; color: var(--muted); background: var(--surface-subtle); }
+.writing-markdown-content :not(pre) > code { background: var(--surface-subtle); padding: 2px 5px; border-radius: 4px; }
+.writing-markdown-content pre { padding: 14px; background: var(--surface-subtle); border-radius: 8px; overflow: auto; }
+.writing-markdown-content table { border-collapse: collapse; display: block; max-width: 100%; overflow: auto; }
+.writing-markdown-content :is(th,td) { border: 1px solid var(--line); padding: 7px 12px; }
+.writing-markdown-content th { background: var(--surface-subtle); }
+.writing-markdown-content hr { border: 0; border-top: 1px solid var(--line); margin: 24px 0; }
+.writing-math-block { overflow-x: auto; overflow-y: hidden; padding: 5px 0; }
+.writing-markdown-content .katex { font-size: 1.15em; }
+.writing-image-unavailable { color: var(--muted); font-size: .9em; }
+@media (max-width: 1100px) {
+  .writing-editors.with-preview .writing-markdown-editor { flex: 1 1 50%; min-height: 40%; }
+  .writing-toolbar:has(.writing-menu-tools) { gap: 6px; padding: 8px; }
+  #writing-format-tools.markdown-tools .button { padding: 3px 6px; }
+}
