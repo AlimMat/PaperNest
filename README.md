@@ -19,7 +19,7 @@ PaperNest is a local Windows workspace for reading papers, keeping research note
 
 The reader supports continuous PDF scrolling, zoom, text selection, yellow or red highlights, highlight comments, anchored notes, and pasted note images. **Reading mode** gives the PDF the whole workspace; **Reading + notes** keeps the note panel available.
 
-![PDF reading and paper notes](image/Fig.png)
+![PDF reading and paper notes](image/Fig2.png)
 
 The reader also has a copy-path button. It copies the absolute path of the original PDF, which is useful when opening a file in another tool or sharing its location with a coding assistant.
 
