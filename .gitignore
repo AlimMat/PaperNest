@@ -35,6 +35,11 @@ __pycache__/
 *.png
 !static/*.png
 !assets/branding/*.png
+!image/
+!image/*.jpg
+!image/*.jpeg
+!image/*.png
+!image/*.gif
 *.zip
 *.lnk
 *.bak
