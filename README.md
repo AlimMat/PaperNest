@@ -19,7 +19,7 @@ PaperNest is a local Windows workspace for reading papers, keeping research note
 
 The reader supports continuous PDF scrolling, zoom, text selection, yellow or red highlights, highlight comments, anchored notes, and pasted note images. **Reading mode** gives the PDF the whole workspace; **Reading + notes** keeps the note panel available.
 
-![PDF reading and paper notes](image/reading.jpg)
+![PDF reading and paper notes](image/Fig.png)
 
 The reader also has a copy-path button. It copies the absolute path of the original PDF, which is useful when opening a file in another tool or sharing its location with a coding assistant.
 
@@ -27,11 +27,11 @@ The reader also has a copy-path button. It copies the absolute path of the origi
 
 The writing workspace is stored separately in writing/. Create folders and edit Markdown, Word, or LaTeX files with autosave, drafts, search, rename, move, and remove controls.
 
-![Markdown editor and live preview](image/writing.jpg)
+![Markdown editor and live preview](image/Fig3.png)
 
 Markdown includes heading levels, styles, paragraphs, lists, tables, code, formulas, pasted images, image-data folding, live preview, reading mode, and writing zoom. LaTeX includes English and Chinese templates, XeLaTeX compilation, PDF preview, error reporting, and PDF download.
 
-![Markdown reading mode](image/focus-reading.jpg)
+![Markdown reading mode](image/Fig4.png)
 
 You can open a paper while writing, or open a writing document while reading. PaperNest places reading and writing side by side and lets you resize the split. Links can point to PaperNest papers, writing documents, folders, or local paths; external PDFs open in the browser and other external files use the Windows default application.
 
@@ -47,7 +47,7 @@ PaperNest's built-in translation and automatic selection translation are disable
 
 PaperNest does not call a Baidu API or upload your library. The Baidu desktop client reads the selected screen text when its own划译 feature is enabled; its account, availability, and limits are controlled by Baidu and may change between releases.
 
-![Baidu Translate selection mode](image/baidu-translate.png)
+![Baidu Translate selection mode](image/Fig5.png)
 
 ## Installation
 
