@@ -2,7 +2,7 @@
 
 PaperNest is a local Windows workspace for reading papers, keeping research notes, and writing in one place. It keeps your PDFs and drafts on your computer and combines a clean PDF reader with a separate Markdown, Word, and LaTeX writing area.
 
-![PaperNest library](image/library.jpg)
+![PaperNest library](image/PaperNest.png)
 
 ## Highlights
 
