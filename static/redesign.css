@@ -754,6 +754,56 @@ h1 {
   border-color: #ffffffeb;
   --glass-shadow: #344d3925;
 }
+/* Journal catalogue tiers use q1–q4 identifiers.  Keep each tier a full
+   card skin; otherwise an unrecognised tier falls back to a small white card. */
+.paper-card.tier-q1 {
+  --ink: #24452f;
+  --text: #31583d;
+  --muted: #547060;
+  --green: #2f7047;
+  --on-accent: #fff;
+  --line: #a7c8af;
+  --surface-subtle: #dceee0;
+  --glass-edge: #eaf8ec;
+  --glass-shadow: #2a633c42;
+  background: #cfe7d3;
+}
+.paper-card.tier-q2 {
+  --ink: #233d59;
+  --text: #365878;
+  --muted: #5c7692;
+  --green: #3b6b96;
+  --on-accent: #fff;
+  --line: #afc5dc;
+  --surface-subtle: #dce9f6;
+  --glass-edge: #edf6ff;
+  --glass-shadow: #315a8240;
+  background: #d4e4f3;
+}
+.paper-card.tier-q3 {
+  --ink: #5a421d;
+  --text: #6c542c;
+  --muted: #806c48;
+  --green: #866929;
+  --on-accent: #fff;
+  --line: #dbc58e;
+  --surface-subtle: #f5e9c9;
+  --glass-edge: #fff9e4;
+  --glass-shadow: #876b2b3d;
+  background: #f0e0b3;
+}
+.paper-card.tier-q4 {
+  --ink: #503b62;
+  --text: #654c78;
+  --muted: #806b91;
+  --green: #795592;
+  --on-accent: #fff;
+  --line: #cfbde0;
+  --surface-subtle: #eee3f5;
+  --glass-edge: #faf2ff;
+  --glass-shadow: #67427a3d;
+  background: #e4d5ed;
+}
 .paper-card .card-body,
 .paper-card .card-content {
   position: relative;

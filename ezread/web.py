@@ -176,6 +176,10 @@ def handler_for(app: ApplicationContext):
                     snapshot = app.DATA / 'tmp' / f'backup-{secrets.token_hex(5)}.sqlite3'
                     with app.LOCK, app.db() as source, contextlib.closing(sqlite3.connect(snapshot)) as target:
                         source.backup(target)
+                        # Older builds could store an API key for the removed
+                        # translation integration. Keep it out of new backups.
+                        target.execute("DELETE FROM settings WHERE key='qwen_api_key'")
+                        target.commit()
                         docs = app.all_docs(include_deleted=True)
                     with zipfile.ZipFile(export, 'w', zipfile.ZIP_DEFLATED) as z:
                         z.write(snapshot, 'data/library.sqlite3')
