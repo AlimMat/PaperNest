@@ -94,13 +94,15 @@ body.writing-mode { --sidebar-width: var(--writing-sidebar-width, 11.5rem); --si
 .writing-save-tools > button { white-space: nowrap; }
 .with-preview #writing-source { width: 50%; }
 .reading-manuscript .writing-toolbar { justify-content: flex-end; }
+.writing-save-tools > #writing-reading-open-paper { display: none; }
+.manuscript-reading #writing-reading-open-paper { display: inline-flex; }
 .reading-manuscript .writing-preview { border: 0; min-height: 0; }
 /* Reading is a compact, reversible view of the same document/editor nodes. */
 .writing-mode .workspace:has(> .writing-view.manuscript-reading) { padding-block: 8px; }
 .writing-view.manuscript-reading { gap: 0; }
 .writing-view.manuscript-reading > .writing-heading,
 .manuscript-reading .writing-status,
-.manuscript-reading .writing-save-tools > :not(#writing-read-toggle) { display: none !important; }
+.manuscript-reading .writing-save-tools > :not(#writing-read-toggle):not(#writing-reading-open-paper) { display: none !important; }
 .manuscript-reading .writing-toolbar { padding: 6px 12px; gap: 0; background: var(--bg); align-items: center; }
 .manuscript-reading #writing-read-toggle { min-height: 36px; padding: 6px 12px; }
 .manuscript-reading .writing-latex-bar { display: none; }

@@ -470,6 +470,7 @@ function installWriting() {
     view.reading = false;
     writingUpdatePreview();
   });
+  $("#writing-reading-open-paper").addEventListener("click", () => readwritePick("paper"));
   $("#writing-read-toggle").addEventListener("click", () => act(() => writingRun(async () => {
     await writingFlush();
     const view = writingState.doc?.format === "tex" ? writingLatex : writingMarkdown;
