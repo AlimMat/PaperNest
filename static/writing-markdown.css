@@ -16,7 +16,15 @@
 .writing-markdown-editor .CodeMirror-selected { background: var(--green-soft); }
 .writing-markdown-editor .CodeMirror-focused .CodeMirror-selected { background: color-mix(in srgb, var(--green) 25%, var(--paper)); }
 .writing-markdown-editor .cm-header { color: var(--green); font-weight: 650; }
-.writing-markdown-editor .cm-link, .writing-markdown-editor .cm-url { color: var(--green); }
+:root { --writing-link: #1769aa; }
+:root[data-theme="graphite"] { --writing-link: #8fc9ff; }
+.writing-markdown-editor .cm-link,
+.writing-markdown-editor .cm-url {
+  color: var(--writing-link);
+  text-decoration: underline;
+  text-decoration-color: currentColor;
+  text-underline-offset: 2px;
+}
 .writing-markdown-editor .cm-comment { color: var(--muted); }
 .writing-image-fold { display: inline-block; border: 1px solid var(--line); border-radius: 7px; padding: 1px 7px; background: var(--green-soft); color: var(--green); font: calc(.78rem * var(--writing-scale, 1))/1.7 var(--system-font); vertical-align: baseline; white-space: nowrap; cursor: pointer; }
 .writing-image-fold:focus-visible { outline: 2px solid var(--green); }
@@ -40,6 +48,13 @@
 .writing-markdown-content hr { border: 0; border-top: 1px solid var(--line); margin: 24px 0; }
 .writing-math-block { overflow-x: auto; overflow-y: hidden; padding: 5px 0; }
 .writing-markdown-content .katex { font-size: 1.15em; }
+.writing-markdown-content a {
+  color: var(--writing-link);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+.writing-markdown-content a:hover { color: var(--green); }
 .writing-image-unavailable { color: var(--muted); font-size: .9em; }
 @media (max-width: 1100px) {
   .writing-editors.with-preview .writing-markdown-editor { flex: 1 1 50%; min-height: 40%; }
