@@ -61,8 +61,7 @@ PaperNest currently ships as source code for Windows. Install:
 - Git (optional, if downloading with git clone)
 - XeLaTeX/TeX Live (optional, for LaTeX preview)
 
-    ```git clone https://github.com/AlimMat/PaperNest.git
-or download ZIP
+  git clone https://github.com/AlimMat/PaperNest.git or download ZIP
   
     ```cd PaperNest
     python -m venv .venv
