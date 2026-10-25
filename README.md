@@ -67,7 +67,7 @@ PaperNest currently ships as source code for Windows. Install:
   
     python -m venv .venv
   
-    .\\.venv\\Scripts\\python.exe -m pip install -r requirements.txt
+    >.\\.venv\\Scripts\\python.exe -m pip install -r requirements.txt
   
     powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\build-desktop.ps1
   
