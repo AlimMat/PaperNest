@@ -111,6 +111,7 @@ function writingUpdatePreview(refreshEditor = true) {
   $("#writing-editors").classList.toggle("with-preview", visible && !reading);
   $("#writing-document").classList.toggle("reading-manuscript", reading);
   $("#writing-view").classList.toggle("manuscript-reading", reading);
+  writingPlaceTabs();
   if ($("#writing-markdown-editor")) $("#writing-markdown-editor").hidden = !markdown || reading;
   $("#writing-format-tools").hidden = reading;
   $("#writing-preview-toggle").setAttribute("aria-pressed", String(visible && !reading));
@@ -373,6 +374,7 @@ function writingSetHeadingCollapsed(collapsed, persist = true) {
   const toggle = $("#writing-heading-toggle");
   toggle.setAttribute("aria-expanded", String(!writingState.headingCollapsed));
   toggle.setAttribute("aria-label", writingState.headingCollapsed ? "展开写作顶部栏" : "收起写作顶部栏");
+  writingPlaceTabs();
   if (persist) writeBrowserSetting("writingHeadingCollapsed", String(writingState.headingCollapsed));
 }
 async function writingSwitch(mode) {

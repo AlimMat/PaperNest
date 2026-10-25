@@ -14,6 +14,22 @@ function installWritingTabs() {
   });
 }
 
+function writingPlaceTabs() {
+  const tabs = $("#writing-tabs"), view = $("#writing-view");
+  if (!tabs || !view) return;
+  // The compact heading has otherwise-unused horizontal space. Reuse it for
+  // open documents, but keep reading mode's tabs in its visible mini toolbar.
+  const inHeading = writingState.headingCollapsed && !view.classList.contains("manuscript-reading");
+  const target = inHeading ? $(".writing-heading-actions") : $(".writing-toolbar");
+  if (inHeading) {
+    const toggle = $("#writing-heading-toggle");
+    if (tabs.parentElement !== target || toggle.nextElementSibling !== tabs) toggle.after(tabs);
+  } else if (tabs.parentElement !== target || target.firstElementChild !== tabs) {
+    target.prepend(tabs);
+  }
+  tabs.classList.toggle("writing-tabs-in-heading", inHeading);
+}
+
 function writingRenderTabs() {
   const tabs = $("#writing-tabs");
   if (!tabs) return;
