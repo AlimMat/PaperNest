@@ -63,7 +63,8 @@ PaperNest currently ships as source code for Windows. Install:
 
   git clone https://github.com/AlimMat/PaperNest.git or download ZIP
   
-    ```cd PaperNest
+    ```
+    cd PaperNest
     python -m venv .venv
     .\\.venv\\Scripts\\python.exe -m pip install -r requirements.txt
     powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\build-desktop.ps1
