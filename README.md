@@ -61,12 +61,13 @@ PaperNest currently ships as source code for Windows. Install:
 - Git (optional, if downloading with git clone)
 - XeLaTeX/TeX Live (optional, for LaTeX preview)
 
-    git clone https://github.com/AlimMat/PaperNest.git or download ZIP
+    ```git clone https://github.com/AlimMat/PaperNest.git
+or download ZIP
   
     ```cd PaperNest
     python -m venv .venv
     .\\.venv\\Scripts\\python.exe -m pip install -r requirements.txt
-    powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\build-desktop.ps1```
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\build-desktop.ps1
   
 
 The desktop build downloads the WebView2 SDK from Microsoft NuGet on its first run. Start PaperNest with 启动PaperNest.vbs. To create a desktop shortcut, run:
