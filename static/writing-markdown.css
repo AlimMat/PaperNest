@@ -55,6 +55,7 @@
   text-underline-offset: 2px;
 }
 .writing-markdown-content a:hover { color: var(--green); }
+.writing-preview .writing-markdown-content [data-writing-source-line] { cursor: text; }
 .writing-image-unavailable { color: var(--muted); font-size: .9em; }
 @media (max-width: 1100px) {
   .writing-editors.with-preview .writing-markdown-editor { flex: 1 1 50%; min-height: 40%; }

@@ -67,9 +67,10 @@ function writingMarkdownEditor(doc) {
   $("#writing-markdown-editor").hidden = doc?.format !== "md";
   if (doc?.format !== "md") { writingMarkdown.doc = null; return; }
   if (writingMarkdown.doc !== doc) {
+    if (writingMarkdown.doc) writingMarkdown.doc.editorDoc = editor.getDoc();
     writingMarkdown.doc = null;
     editor.operation(() => {
-      editor.swapDoc(new CodeMirror.Doc(doc.content, "markdown"));
+      editor.swapDoc(doc.editorDoc || new CodeMirror.Doc(doc.content, "markdown"));
       writingMarkdown.doc = doc;
       writingMarkdown.expanded = false;
       writingMarkdownFold();
@@ -265,7 +266,7 @@ function writingMarkdownRenderer() {
     return true;
   }, { alt: ["paragraph", "reference", "blockquote", "list"] });
   md.renderer.rules.writing_math = (tokens, i) => writingMarkdownMath(tokens[i].content, false);
-  md.renderer.rules.writing_math_block = (tokens, i) => `<div class="writing-math-block">${writingMarkdownMath(tokens[i].content, true)}</div>`;
+  md.renderer.rules.writing_math_block = (tokens, i) => `<div class="writing-math-block" data-writing-source-line="${tokens[i].map?.[0] ?? ""}">${writingMarkdownMath(tokens[i].content, true)}</div>`;
   const imageRenderer = md.renderer.rules.image;
   md.renderer.rules.image = (tokens, i, options, env, renderer) => {
     const token = tokens[i], src = token.attrGet("src") || "";
@@ -285,8 +286,61 @@ function writingMarkdownRenderer() {
       token.children.unshift(check);
     }
   });
+  const mappedBlocks = ["paragraph_open", "heading_open", "blockquote_open", "bullet_list_open", "ordered_list_open", "list_item_open", "table_open", "thead_open", "tbody_open", "tr_open", "code_block", "fence", "hr"];
+  for (const type of mappedBlocks) {
+    const original = md.renderer.rules[type];
+    md.renderer.rules[type] = (tokens, index, options, env, slf) => {
+      const token = tokens[index];
+      const rendered = original ? original(tokens, index, options, env, slf) : slf.renderToken(tokens, index, options);
+      const line = token.map?.[0];
+      if (line === undefined || !rendered.startsWith("<")) return rendered;
+      return rendered.replace(/^<([A-Za-z][^\s/>]*)/, `<$1 data-writing-source-line="${line}"`);
+    };
+  }
   writingMarkdown.renderer = md;
   return md;
+}
+function writingPreviewNavigate(text, source, event) {
+  if (writingState.doc?.path !== source || writingState.doc?.format !== "md" || !writingMarkdown.editor || writingState.busy) return;
+  const block = event.target.closest("[data-writing-source-line]");
+  if (!block) return;
+  let selected = window.getSelection()?.toString().trim();
+  // Synthetic double-clicks (and some CJK browser configurations) do not
+  // always leave a DOM selection behind. Recover the clicked text from the
+  // caret position so the same gesture remains useful in those cases.
+  if (!selected) {
+    const caret = document.caretRangeFromPoint?.(event.clientX, event.clientY)
+      || (() => { const position = document.caretPositionFromPoint?.(event.clientX, event.clientY); if (!position) return null; const range = document.createRange(); range.setStart(position.offsetNode, position.offset); range.collapse(true); return range; })();
+    const node = caret?.startContainer?.nodeType === Node.TEXT_NODE ? caret.startContainer : null;
+    if (node) {
+      const value = node.textContent || "", offset = caret.startOffset;
+      const isWord = char => /[A-Za-z0-9_\u3400-\u9fff]/u.test(char);
+      let left = offset, right = offset;
+      while (left > 0 && isWord(value[left - 1])) left -= 1;
+      while (right < value.length && isWord(value[right])) right += 1;
+      selected = value.slice(left, right).trim();
+    }
+  }
+  if (!selected) selected = block.textContent?.trim() || "";
+  if (!selected) return;
+  const line = Number(block.dataset.writingSourceLine), lines = text.split("\n");
+  const start = Number.isInteger(line) && line >= 0 && line < lines.length
+    ? lines.slice(0, line).reduce((total, value) => total + value.length + 1, 0) : 0;
+  const candidates = [selected, selected.replace(/\s+/g, " ")];
+  let index = -1;
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    index = text.indexOf(candidate, start);
+    if (index >= 0) break;
+  }
+  if (index < 0) for (const candidate of candidates) {
+    if (!candidate) continue;
+    index = text.indexOf(candidate);
+    if (index >= 0) break;
+  }
+  if (index < 0) return;
+  const cm = writingMarkdown.editor, from = cm.posFromIndex(index), to = cm.posFromIndex(index + selected.length);
+  cm.focus(); cm.setSelection(from, to); cm.scrollIntoView({ from, to }, 80);
 }
 function writingRenderMarkdown(text, source = writingState.doc?.path) {
   const content = el("div", { class: "writing-markdown-content" });
@@ -294,5 +348,7 @@ function writingRenderMarkdown(text, source = writingState.doc?.path) {
   // trust:false may generate HTML; image URLs are constrained to embedded raster.
   content.innerHTML = writingMarkdownRenderer().render(text);
   writingBindLinks(content, source);
+  writingBindImages(content);
+  content.addEventListener("dblclick", event => writingPreviewNavigate(text, source, event));
   return content;
 }

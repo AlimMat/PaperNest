@@ -19,6 +19,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--latex-only', action='store_true', help='Only exercise the actual XeLaTeX preview workflow.')
     parser.add_argument('--workspace-only', action='store_true', help='Exercise workspace controls, sidebar and file operations without compiling LaTeX previews.')
+    parser.add_argument('--skip-latex', action='store_true', help='Exercise workspace and Markdown, without compiling LaTeX previews.')
     args = parser.parse_args()
     (ROOT / 'work').mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='writing-check-', dir=ROOT / 'work', ignore_cleanup_errors=True) as folder:
@@ -41,9 +42,10 @@ def main():
                 writing.mutate(server, {'operation': 'create', 'path': '增强写作.md'})
             else:
                 subprocess.run(['node', str(ROOT / 'tests/browser_writing.cjs')], cwd=ROOT, env=env, check=True)
+                subprocess.run(['node', str(ROOT / 'tests/browser_writing_tabs.cjs')], cwd=ROOT, env=env, check=True)
                 if not args.workspace_only:
                     subprocess.run(['node', str(ROOT / 'tests/browser_markdown.cjs')], cwd=ROOT, env=env, check=True)
-            if not args.workspace_only:
+            if not args.workspace_only and not args.skip_latex:
                 subprocess.run(['node', str(ROOT / 'tests/browser_latex.cjs')], cwd=ROOT, env=env, check=True)
             if not args.latex_only:
                 assert writing.document(server, '研究计划/实验.md')['content'].startswith('# 研究计划')

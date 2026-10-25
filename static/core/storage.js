@@ -7,6 +7,7 @@ const BROWSER_SETTINGS = Object.freeze({
   direction: { key: "ezread-sort-direction", previous: [], valid: value => ["asc", "desc"].includes(value) },
   chatWidth: { key: "ezread-paper-chat-width", previous: [], valid: value => typeof value === "string" && /^\d+(?:\.\d+)?$/.test(value) && Number(value) >= 160 && Number(value) <= 3000 },
   writingSidebarCollapsed: { key: "ezread-writing-sidebar-collapsed", previous: [], valid: value => value === "true" || value === "false" },
+  writingHeadingCollapsed: { key: "ezread-writing-heading-collapsed", previous: [], valid: value => value === "true" || value === "false" },
   readingSidebarWidth: { key: "ezread-reading-sidebar-width", previous: [], valid: value => typeof value === "string" && /^\d+$/.test(value) && Number(value) >= 184 && Number(value) <= 480 },
   writingSidebarWidth: { key: "ezread-writing-sidebar-width", previous: [], valid: value => typeof value === "string" && /^\d+$/.test(value) && Number(value) >= 184 && Number(value) <= 480 },
   writingZoom: { key: "ezread-writing-zoom", previous: [], valid: value => typeof value === "string" && /^\d+$/.test(value) && Number(value) >= 50 && Number(value) <= 200 && Number(value) % 10 === 0 },

@@ -58,7 +58,7 @@ const origin = process.env.EZREAD_TEST_URL;
     assert.ok(await page.evaluate(() => writingLinks.ratio > .5));
     await page.locator('#writing-link-divider').focus(); await page.keyboard.press('Home');
     await page.locator('#writing-read-toggle').click(); await page.waitForFunction(() => writingMarkdown.reading && !writingState.busy);
-    assert.deepEqual(await page.locator('.writing-toolbar button:visible').allTextContents(), ['退出阅读']);
+    assert.deepEqual(await page.locator('.writing-save-tools button:visible').allTextContents(), ['− 缩小', '+ 放大', '打开阅读', '退出阅读']);
     assert.equal(await page.locator('#writing-link-reference-body').isVisible(), true);
     await page.locator('#writing-read-toggle').click(); await page.waitForFunction(() => !writingMarkdown.reading && !writingState.busy);
     await page.setViewportSize({ width: 1000, height: 720 });

@@ -1,0 +1,25 @@
+.writing-markdown-content img[role="button"] { cursor: zoom-in; }
+.writing-markdown-content img[role="button"]:focus-visible { outline: 2px solid var(--green); outline-offset: 4px; }
+#writing-image-dialog {
+  width: calc(100vw - 40px); max-width: 1600px;
+  height: calc(100dvh - 40px); max-height: calc(100dvh - 40px);
+  padding: 0; overflow: hidden;
+}
+#writing-image-dialog[open] { display: flex; flex-direction: column; }
+.writing-image-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--bg); flex: none; }
+#writing-image-title { flex: 1 1 120px; min-width: 0; margin: 0; font-size: 1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.writing-image-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.writing-image-controls .button { font-size: .85rem; padding: 6px 10px; white-space: nowrap; }
+#writing-image-scale { min-width: 4.2em; text-align: center; font-size: .85rem; font-variant-numeric: tabular-nums; }
+#writing-image-stage { flex: 1; min-height: 0; min-width: 0; overflow: auto; overscroll-behavior: contain; overflow-anchor: none; background: var(--surface-subtle, var(--paper)); touch-action: none; }
+#writing-image-stage.can-pan { cursor: grab; }
+#writing-image-stage.panning { cursor: grabbing; user-select: none; }
+#writing-image-surface { display: grid; place-items: center; min-width: 100%; min-height: 100%; }
+#writing-image-full { display: block; max-width: none; max-height: none; margin: 0; user-select: none; background: transparent; }
+#writing-image-help { flex: none; margin: 0; padding: 7px 14px; color: var(--muted); font-size: .75rem; border-top: 1px solid var(--line); }
+@media (max-width: 600px) {
+  #writing-image-dialog { width: calc(100vw - 16px); height: calc(100dvh - 16px); max-height: calc(100dvh - 16px); max-width: calc(100vw - 16px); }
+  .writing-image-toolbar { padding: 8px; }
+  .writing-image-controls { gap: 3px; }
+  .writing-image-controls .button { padding: 5px 7px; }
+}

@@ -7,7 +7,7 @@ const THEME_CHOICES = Object.freeze([["paper", "纸白"], ["sage", "浅绿"], ["
 const PAPER_TYPES = Object.freeze({ journal: "期刊论文", conference: "会议论文", preprint: "预印本", other: "其他文献" });
 const TIER_NAMES = Object.freeze({ q1: "Q1", q2: "Q2", q3: "Q3", q4: "Q4", other: "未分区", conference: "会议", preprint: "预印本" });
 const state = { papers: [], collections: [], settings: { ...DEFAULT_PREFERENCES }, status: null, usage: null, view: "all", collection: "", detail: null, detailFigure: null, reader: null, readerPage: 1, selectedBlock: null, zoom: "fit", loading: true, importing: false, query: "", pollBusy: false, selectionMode: false, selectedPapers: new Set(), readerRenderedSignature: null, detailRenderedSignature: null };
-const writingState = { mode: "reading", root: "", entries: [], folder: "", doc: null, timer: null, saving: null, busy: false, preview: false, dialog: null, sidebarCollapsed: false, collapsedFolders: new Set(), zoom: 100 };
+const writingState = { mode: "reading", root: "", entries: [], folder: "", doc: null, tabs: [], timer: null, saving: null, busy: false, preview: false, dialog: null, sidebarCollapsed: false, headingCollapsed: false, collapsedFolders: new Set(), zoom: 100 };
 function paperCollections(paper) {
   const values = Array.isArray(paper?.collections) ? paper.collections : [];
   const result = [...new Set(values.filter(value => typeof value === "string" && value.trim()).map(value => value.trim()))];

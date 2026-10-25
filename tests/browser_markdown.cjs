@@ -29,7 +29,7 @@ const origin = process.env.EZREAD_TEST_URL;
       for (const path of ['增强写作.md', '图片复制.md']) await writingRequest({ operation: 'create', kind: 'file', path });
       await writingRefresh(); await writingOpen('增强写作.md');
     });
-    assert.ok(await page.locator('.writing-toolbar button:visible').count() <= 12, 'Markdown toolbar has at most twelve visible controls');
+    assert.ok(await page.locator('.writing-save-tools button:visible, #writing-format-tools button:visible').count() <= 12, 'Markdown toolbar has at most twelve visible controls');
     await fill('研究方法');
     // The visible toolbar changes headings without accumulating prefixes.
     for (let level = 1; level <= 6; level++) {
@@ -64,6 +64,17 @@ const origin = process.env.EZREAD_TEST_URL;
     assert.equal(await page.locator('#writing-preview table').count(), 1);
     assert.equal(await page.locator('#writing-preview input[type=checkbox]').count(), 2);
     assert.equal(await page.locator('#writing-preview code').innerText(), '$不要渲染$');
+    const navigationText = '# 预览定位\n\n这里是第一次出现的定位词。\n\n第二段包含目标词和另一个定位词。';
+    await fill(navigationText);
+    await page.waitForFunction(() => document.querySelector('#writing-preview').textContent.includes('第二段包含目标词'));
+    await page.locator('#writing-preview').getByText('第二段包含目标词和另一个定位词。', { exact: true }).evaluate(node => {
+      const range = document.createRange(); range.selectNodeContents(node);
+      const selection = window.getSelection(); selection.removeAllRanges(); selection.addRange(range);
+      node.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, clientX: node.getBoundingClientRect().left + 4, clientY: node.getBoundingClientRect().top + 4 }));
+    });
+    await page.waitForFunction(() => writingMarkdown.editor.getSelection().includes('目标词'));
+    assert.equal(await page.evaluate(() => writingMarkdown.editor.getCursor().line), 4);
+    assert.equal(await source(), navigationText);
     const editorFont = await page.locator('.CodeMirror').evaluate(node => parseFloat(getComputedStyle(node).fontSize));
     const selectionBeforeZoom = await page.evaluate(() => writingMarkdown.editor.listSelections());
     await page.locator('#writing-zoom-in').click();
@@ -71,7 +82,7 @@ const origin = process.env.EZREAD_TEST_URL;
     assert.ok(await page.locator('.CodeMirror').evaluate(node => parseFloat(getComputedStyle(node).fontSize)) > editorFont);
     assert.equal(await page.locator('.writing-markdown-content').evaluate(node => getComputedStyle(node).zoom), '1.1');
     assert.deepEqual(await page.evaluate(() => writingMarkdown.editor.listSelections()), selectionBeforeZoom);
-    assert.equal(await source(), example);
+    assert.equal(await source(), navigationText);
     await page.locator('#writing-zoom-out').click();
     for (let index = 0; index < 5; index++) await page.locator('#writing-zoom-out').click();
     assert.equal(await page.locator('#writing-zoom-out').isDisabled(), true);
@@ -110,7 +121,7 @@ const origin = process.env.EZREAD_TEST_URL;
     await tool('折叠图片数据').click();
     await page.locator('.writing-image-fold').waitFor();
     await tool('撤销').click();
-    assert.equal(await source(), example);
+    assert.equal(await source(), navigationText);
     await tool('重做').click();
     assert.equal(await source(), withImage);
     // Typing below a folded embedded image must not jump either pane back to
@@ -177,7 +188,7 @@ const origin = process.env.EZREAD_TEST_URL;
     await page.evaluate(async () => { await writingOpen('增强写作.md'); writingMarkdown.editor.setCursor({ line: 0, ch: 0 }); });
     await page.locator('.writing-image-fold').waitFor();
     await page.screenshot({ path: path.join(output, 'markdown-enhanced-wide.png') });
-    // Reading keeps only its compact exit bar, preserving edits, cursor and undo.
+    // Reading keeps compact zoom/open/exit controls, preserving edits and undo.
     await page.evaluate(() => writingMarkdown.editor.replaceRange('\n阅读模式检查', { line: 0, ch: 0 }));
     const beforeReading = await source();
     const cursorBeforeReading = await page.evaluate(() => writingMarkdown.editor.getCursor());
@@ -190,7 +201,14 @@ const origin = process.env.EZREAD_TEST_URL;
     assert.equal(await page.locator('#writing-preview').isVisible(), true);
     assert.equal(await page.locator('.writing-heading').isVisible(), false);
     assert.equal(await page.locator('.writing-status').isVisible(), false);
-    assert.deepEqual(await page.locator('.writing-toolbar button:visible').allTextContents(), ['退出阅读']);
+    const readingControls = ['− 缩小', '+ 放大', '打开阅读', '退出阅读'];
+    assert.deepEqual(await page.locator('.writing-save-tools button:visible').allTextContents(), readingControls);
+    assert.equal(await page.locator('#writing-zoom-level').isVisible(), true);
+    await page.locator('#writing-zoom-in').click();
+    assert.equal(await page.locator('#writing-zoom-level').innerText(), '110%');
+    assert.equal(await page.evaluate(() => writingMarkdown.reading), true);
+    assert.equal(await source(), beforeReading);
+    await page.locator('#writing-zoom-out').click();
     assert.equal(await page.locator('#writing-preview-toggle').isVisible(), false);
     const compact = await page.evaluate(() => ({ top: document.querySelector('#writing-editors').getBoundingClientRect().top, bar: document.querySelector('.writing-toolbar').getBoundingClientRect().height }));
     assert.ok(compact.top < 65 && compact.bar <= 52 && compact.top < editingTop - 60, JSON.stringify({ editingTop, compact }));
@@ -236,6 +254,92 @@ const origin = process.env.EZREAD_TEST_URL;
     await page.evaluate(async () => { await writingMarkdownInsertImages([new File(['not an image'], '坏图.png', { type: 'image/png' })]); });
     assert.equal(await source(), beforeInvalid);
     assert.notEqual(await page.locator('#writing-save-status').innerText(), '正在嵌入图片…');
+    // Tall embedded images open without modifying bytes or navigating a linked
+    // image. Viewer zoom is independent of manuscript zoom and scroll position.
+    const tallImage = await page.evaluate(() => {
+      const canvas = document.createElement('canvas'); canvas.width = 1400; canvas.height = 4800;
+      const ctx = canvas.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, 1400, 4800);
+      ctx.fillStyle = '#285448'; ctx.font = '42px sans-serif';
+      for (let y = 80; y < 4800; y += 120) ctx.fillText(`PaperNest image detail / row ${y}`, 40, y);
+      return canvas.toDataURL('image/png');
+    });
+    const imageDocument = `# 大图查看\n\n[![长图](${tallImage})](https://example.invalid/do-not-open)\n\n末尾内容`;
+    await fill(imageDocument);
+    await page.waitForFunction(() => document.querySelector('#writing-preview img')?.naturalHeight === 4800);
+    const checkViewer = async () => {
+      await page.locator('#writing-preview img').click();
+      await page.waitForFunction(() => document.querySelector('#writing-image-full')?.naturalHeight === 4800);
+      assert.equal(await page.locator('#writing-image-dialog').isVisible(), true);
+      assert.equal(await page.locator('#writing-image-full').getAttribute('src'), tallImage);
+      assert.ok(await page.evaluate(() => writingImageViewer.scale < 1));
+      await page.locator('#writing-image-actual').click();
+      assert.equal(await page.locator('#writing-image-scale').innerText(), '100%');
+      assert.equal(await page.locator('#writing-zoom-level').innerText(), '100%');
+      const actualGeometry = await page.locator('#writing-image-stage').evaluate(node => ({
+        width: node.clientWidth, height: node.clientHeight, contentHeight: node.scrollHeight,
+        imageWidth: document.querySelector('#writing-image-full').getBoundingClientRect().width
+      }));
+      assert.equal(actualGeometry.imageWidth, 1400);
+      assert.ok(actualGeometry.contentHeight > actualGeometry.height);
+      await page.locator('#writing-image-zoom-in').click();
+      assert.equal(await page.locator('#writing-image-scale').innerText(), '125%');
+      await page.locator('#writing-image-zoom-out').click();
+      assert.equal(await page.locator('#writing-image-scale').innerText(), '100%');
+      const stage = page.locator('#writing-image-stage');
+      const box = await stage.boundingBox();
+      const priorScroll = await stage.evaluate(node => node.scrollTop);
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2 - 100, { steps: 6 });
+      await page.mouse.up();
+      assert.ok(await stage.evaluate(node => node.scrollTop) >= priorScroll + 95);
+      const scroll = await stage.evaluate(node => node.scrollTop);
+      await page.mouse.wheel(0, 180);
+      await page.waitForFunction(scroll => document.querySelector('#writing-image-stage').scrollTop > scroll, scroll);
+      await page.keyboard.down('Control'); await page.mouse.wheel(0, -100); await page.keyboard.up('Control');
+      await page.waitForFunction(() => writingImageViewer.scale > 1);
+      await page.keyboard.press('0');
+      assert.equal(await page.locator('#writing-image-scale').innerText(), '100%');
+      await page.keyboard.press('f');
+      assert.ok(await page.evaluate(() => writingImageViewer.fit && writingImageViewer.scale < 1));
+      await page.screenshot({ path: path.join(output, 'markdown-image-viewer.png') });
+      await page.keyboard.press('Escape');
+      assert.equal(await page.locator('#writing-image-dialog').isVisible(), false);
+      assert.equal(await page.locator('#writing-image-full').getAttribute('src'), null);
+      assert.equal(await source(), imageDocument);
+    };
+    await checkViewer();
+    await page.locator('#writing-read-toggle').click();
+    await page.waitForFunction(() => writingMarkdown.reading && !writingState.busy);
+    const imageScroll = await page.locator('#writing-preview').evaluate(node => node.scrollTop);
+    await checkViewer();
+    assert.equal(await page.evaluate(() => writingMarkdown.reading), true);
+    assert.equal(await page.locator('#writing-preview').evaluate(node => node.scrollTop), imageScroll);
+    // Keyboard opening, narrow/dark layout, resize refit and nested modal layers.
+    await page.locator('#writing-preview img').focus(); await page.keyboard.press('Enter');
+    await page.setViewportSize({ width: 560, height: 540 });
+    await page.evaluate(() => { state.settings.theme = 'graphite'; applyPreferences(); });
+    await page.waitForTimeout(150);
+    const viewerGeometry = await page.locator('#writing-image-dialog').evaluate(node => {
+      const box = node.getBoundingClientRect(), image = document.querySelector('#writing-image-full').getBoundingClientRect();
+      return { left: box.left, top: box.top, right: box.right, bottom: box.bottom, fits: image.height <= document.querySelector('#writing-image-stage').clientHeight };
+    });
+    assert.ok(viewerGeometry.left >= 0 && viewerGeometry.top >= 0 && viewerGeometry.right <= 560 && viewerGeometry.bottom <= 540 && viewerGeometry.fits, JSON.stringify(viewerGeometry));
+    await page.screenshot({ path: path.join(output, 'markdown-image-viewer-narrow-dark.png') });
+    await page.locator('#writing-image-close').click();
+    await page.setViewportSize({ width: 1440, height: 960 });
+    await page.evaluate(() => { state.settings.theme = 'paper'; applyPreferences(); });
+    await page.evaluate(text => {
+      const modal = el('dialog', { id: 'test-image-parent' }, writingRenderMarkdown(text));
+      document.body.append(modal); modal.showModal();
+    }, imageDocument);
+    await page.locator('#test-image-parent img').click();
+    assert.equal(await page.locator('#writing-image-dialog').isVisible(), true);
+    await page.keyboard.press('Escape');
+    assert.equal(await page.locator('#test-image-parent').evaluate(node => node.open), true);
+    await page.evaluate(() => { const modal = document.querySelector('#test-image-parent'); modal.close(); modal.remove(); });
+    await page.locator('#writing-read-toggle').click();
+    await page.waitForFunction(() => !writingMarkdown.reading && !writingState.busy);
     // Raw HTML, scripts, dangerous links and remote images are never executed/fetched.
     await fill('<script>window.markdownUnsafe = true</script>\n\n<img src=x onerror="window.markdownUnsafe = true">\n\n[x](javascript:alert(1))\n\n![remote](https://example.invalid/private.png)\n\n$\\href{javascript:alert(1)}{bad}$');
     await page.locator('#writing-preview .writing-image-unavailable').waitFor();
@@ -282,7 +386,7 @@ const origin = process.env.EZREAD_TEST_URL;
     }));
     assert.equal(readingGeometry.overflow, false);
     assert.ok(readingGeometry.preview > 100 && readingGeometry.footer <= 721, JSON.stringify(readingGeometry));
-    assert.deepEqual(await page.locator('.writing-toolbar button:visible').allTextContents(), ['退出阅读']);
+    assert.deepEqual(await page.locator('.writing-save-tools button:visible').allTextContents(), readingControls);
     assert.equal(await page.locator('.writing-heading').isVisible(), false);
     assert.equal(await page.locator('.writing-status').isVisible(), false);
     await page.locator('#writing-read-toggle').click();

@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="/static/vendor/codemirror/lib/codemirror.css">
   <link rel="stylesheet" href="/static/vendor/katex/dist/katex.min.css">
   <link rel="stylesheet" href="/static/writing-markdown.css">
+  <link rel="stylesheet" href="/static/writing-images.css">
   <link rel="stylesheet" href="/static/readwrite.css">
   <link rel="stylesheet" href="/static/writing-links.css">
   <script src="/static/reader.js" defer></script>
@@ -44,12 +45,14 @@
   <script src="/static/detail/actions.js" defer></script>
   <script src="/static/tasks/status.js" defer></script>
   <script src="/static/writing.js" defer></script>
+  <script src="/static/writing-tabs.js" defer></script>
   <script src="/static/vendor/codemirror/lib/codemirror.js" defer></script>
   <script src="/static/vendor/codemirror/mode/markdown/markdown.js" defer></script>
   <script src="/static/vendor/codemirror/addon/edit/continuelist.js" defer></script>
   <script src="/static/vendor/markdown-it/dist/browser/markdown-it.umd.min.js" defer></script>
   <script src="/static/vendor/katex/dist/katex.min.js" defer></script>
   <script src="/static/writing-markdown.js" defer></script>
+  <script src="/static/writing-images.js" defer></script>
   <script src="/static/writing-latex.js" defer></script>
   <script src="/static/readwrite.js" defer></script>
   <script src="/static/writing-links.js" defer></script>
@@ -134,7 +137,7 @@
         <footer class="library-footer" aria-label="期刊等级颜色图例"><div class="if-legend" id="if-legend"></div></footer>
       </section>
       <section id="writing-view" class="writing-view" aria-label="写作工作区" hidden>
-        <header class="writing-heading"><div><span class="writing-eyebrow">PAPERNEST · 写作</span><h1 id="writing-title">让想法落在纸上</h1><div id="writing-path" class="writing-subtitle">文稿单独保存在 writing 文件夹</div></div><div class="writing-heading-actions"><button id="writing-copy-path" class="button secondary" disabled><svg class="icon"><use href="#i-copy"/></svg>文件地址</button><button id="writing-open-reading" class="button secondary">打开阅读</button><button id="writing-rename" class="button secondary" disabled>重命名 / 移动</button><button id="writing-trash" class="icon-button" aria-label="移除当前文稿" disabled><svg class="icon"><use href="#i-trash"/></svg></button></div></header>
+        <header class="writing-heading"><div><span class="writing-eyebrow">PAPERNEST · 写作</span><h1 id="writing-title">让想法落在纸上</h1><div id="writing-path" class="writing-subtitle">文稿单独保存在 writing 文件夹</div></div><div class="writing-heading-actions"><button id="writing-heading-toggle" class="icon-button" type="button" aria-label="收起写作顶部栏" aria-expanded="true"><svg class="icon"><use href="#i-chevron"/></svg></button><button id="writing-copy-path" class="button secondary" disabled><svg class="icon"><use href="#i-copy"/></svg>文件地址</button><button id="writing-open-reading" class="button secondary">打开阅读</button><button id="writing-rename" class="button secondary" disabled>重命名 / 移动</button><button id="writing-trash" class="icon-button" aria-label="移除当前文稿" disabled><svg class="icon"><use href="#i-trash"/></svg></button></div></header>
         <div id="writing-empty" class="writing-empty"><svg class="icon"><use href="#i-edit"/></svg><h2>阅读之后，开始写作</h2><p>在左侧创建文件夹，整理你的论文草稿与研究想法。</p><div><button class="button secondary" data-new-writing="md">Markdown</button><button class="button secondary" data-new-writing="docx">Word</button><button class="button secondary" data-new-writing="tex">LaTeX</button></div><p class="small">本地文件 · 自动保存 · 随时继续</p></div>
         <div id="writing-document" class="writing-document" hidden>
           <div class="writing-toolbar"><div id="writing-format-tools"></div><div class="writing-save-tools"><button type="button" id="writing-zoom-out" class="text-button" aria-label="缩小写作内容" aria-controls="writing-editors">− 缩小</button><span id="writing-zoom-level" class="writing-zoom-level" role="status" aria-label="写作缩放比例">100%</span><button type="button" id="writing-zoom-in" class="text-button" aria-label="放大写作内容" aria-controls="writing-editors">+ 放大</button><button id="writing-preview-toggle" class="text-button" aria-pressed="false" aria-controls="writing-editors">预览</button><button id="writing-reading-open-paper" class="text-button" aria-label="打开阅读" aria-controls="readwrite-picker">打开阅读</button><button id="writing-read-toggle" class="text-button" aria-pressed="false" aria-controls="writing-editors">阅读模式</button><button id="writing-save" class="button secondary">保存</button></div></div>

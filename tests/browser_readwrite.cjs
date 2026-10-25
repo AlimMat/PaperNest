@@ -34,7 +34,7 @@ const origin = process.env.EZREAD_TEST_URL;
     await page.locator('#writing-read-toggle').click();
     await page.waitForFunction(() => writingMarkdown.reading && !writingState.busy);
     assert.equal(await page.locator('.writing-heading').isVisible(), false);
-    assert.deepEqual(await page.locator('.writing-toolbar button:visible').allTextContents(), ['退出阅读']);
+    assert.deepEqual(await page.locator('.writing-save-tools button:visible').allTextContents(), ['− 缩小', '+ 放大', '打开阅读', '退出阅读']);
     assert.equal(await page.locator('#original-scroll').isVisible(), true);
     assert.equal(await page.locator('#writing-preview').isVisible(), true);
     await page.locator('#writing-read-toggle').click();

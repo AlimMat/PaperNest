@@ -69,12 +69,32 @@ body.writing-mode { --sidebar-width: var(--writing-sidebar-width, 11.5rem); --si
 .writing-eyebrow { font-size: .65rem; letter-spacing: .16em; color: var(--green); }
 .writing-subtitle { font-size: .78rem; color: var(--muted); overflow-wrap: anywhere; }
 .writing-heading-actions { display: flex; gap: 8px; flex: none; }
+.writing-heading-toggle { flex: none; }
+.writing-heading-toggle .icon { transition: transform .16s ease; }
+.writing-view.writing-heading-collapsed { gap: 8px; }
+.writing-view.writing-heading-collapsed > .writing-heading { min-height: 2.35rem; padding: 4px 8px; border: 1px solid var(--line, #dbe4df); border-radius: 10px; background: var(--paper); }
+.writing-view.writing-heading-collapsed > .writing-heading > div:first-child,
+.writing-view.writing-heading-collapsed .writing-heading-actions > :not(#writing-heading-toggle) { display: none !important; }
+.writing-view.writing-heading-collapsed .writing-heading-actions { flex: 1; justify-content: flex-start; }
+.writing-view.writing-heading-collapsed #writing-heading-toggle .icon { transform: rotate(90deg); }
 .writing-empty { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 18px; color: var(--muted); }
 .writing-empty > .icon { width: 54px; height: 54px; color: var(--green); stroke-width: 1; }
 .writing-empty h2 { color: var(--text); }
 .writing-empty > div { display: flex; gap: 12px; }
 .writing-document { display: flex; flex: 1; min-height: 0; flex-direction: column; background: var(--paper); border: 1px solid var(--line, #dbe4df); border-radius: 17px; overflow: hidden; box-shadow: 0 8px 35px #17372b08; }
 .writing-toolbar { display: flex; justify-content: space-between; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--line, #dbe4df); flex-wrap: wrap; }
+#writing-tabs { display: flex; flex: 1 1 100%; min-width: 0; gap: 5px; overflow-x: auto; overflow-y: hidden; overscroll-behavior: contain; scrollbar-width: thin; align-self: stretch; }
+.writing-tab { display: flex; flex: none; align-items: center; min-width: 90px; max-width: 230px; border: 1px solid var(--line); border-radius: 7px; background: var(--paper); }
+.writing-tab.active { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+.writing-tab .writing-tab-select { min-width: 0; flex: 1; border: 0; background: transparent; color: inherit; padding: 6px 10px; font-size: .8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+.writing-tab .writing-tab-close { flex: none; border: 0; background: transparent; color: var(--muted); font-size: 1rem; padding: 4px 7px; min-width: 28px; }
+.writing-tab .writing-tab-close:hover { background: var(--green-soft); color: var(--text); }
+.manuscript-reading #writing-tabs { flex: 1 1 0; align-self: center; margin-right: 12px; }
+.manuscript-reading .writing-toolbar { flex-wrap: nowrap; }
+@media (max-width: 700px) {
+  .manuscript-reading .writing-toolbar { flex-wrap: wrap; }
+  .manuscript-reading #writing-tabs { flex-basis: 100%; margin: 0 0 6px; }
+}
 #writing-format-tools, .writing-save-tools { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
 #writing-format-tools.writing-menu-tools { flex: 1; min-width: 0; flex-wrap: nowrap; }
 #writing-format-tools.writing-menu-tools .app-select { width: 94px; min-width: 78px; flex: 1 1 94px; max-width: 112px; }
@@ -102,7 +122,7 @@ body.writing-mode { --sidebar-width: var(--writing-sidebar-width, 11.5rem); --si
 .writing-view.manuscript-reading { gap: 0; }
 .writing-view.manuscript-reading > .writing-heading,
 .manuscript-reading .writing-status,
-.manuscript-reading .writing-save-tools > :not(#writing-read-toggle):not(#writing-reading-open-paper) { display: none !important; }
+.manuscript-reading .writing-save-tools > :not(#writing-read-toggle):not(#writing-reading-open-paper):not(#writing-zoom-out):not(#writing-zoom-level):not(#writing-zoom-in) { display: none !important; }
 .manuscript-reading .writing-toolbar { padding: 6px 12px; gap: 0; background: var(--bg); align-items: center; }
 .manuscript-reading #writing-read-toggle { min-height: 36px; padding: 6px 12px; }
 .manuscript-reading .writing-latex-bar { display: none; }

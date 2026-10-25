@@ -229,6 +229,7 @@ function writingLatexToolbar(tools) {
 }
 function writingRenderDocument() {
   const doc = writingState.doc;
+  writingRenderTabs();
   writingMarkdownEditor(doc);
   $("#writing-empty").hidden = Boolean(doc);
   $("#writing-document").hidden = !doc;
@@ -237,6 +238,9 @@ function writingRenderDocument() {
   $("#writing-path").textContent = doc ? doc.path : writingState.root || "文稿单独保存在 writing 文件夹";
   if (!doc) { writingUpdatePreview(); return; }
   const word = doc.format === "docx";
+  // Word has no preview pane, so never leave the compact preview header
+  // active when switching from a Markdown/LaTeX document.
+  if (word && writingState.headingCollapsed) writingSetHeadingCollapsed(false, false);
   $("#writing-source").hidden = word || doc.format === "md"; $("#writing-word").hidden = !word;
   if (word) $("#writing-word").innerHTML = writingSafeWord(doc.content);
   else $("#writing-source").value = doc.content;
@@ -260,8 +264,11 @@ function writingRenderDocument() {
 async function writingOpen(path, { discard = false } = {}) {
   if (!discard) await writingFlush();
   const data = await api(`/api/writing/document?path=${encodeURIComponent(path)}`);
-  const doc = { ...data, saved: data.content };
-  if (!discard) {
+  writingCaptureTab();
+  const cached = writingState.tabs.find(item => item.path === path);
+  const doc = !discard && cached?.revision === data.revision && cached.saved === data.content ? cached : { ...data, saved: data.content };
+  if (!discard && cached?.revision === data.revision && doc !== cached) doc.tabView = cached.tabView;
+  if (!discard && doc !== cached) {
     try {
       const draft = await writingReadDraft(path);
       if (draft && typeof draft.content === "string" && typeof draft.revision === "string") {
@@ -269,9 +276,16 @@ async function writingOpen(path, { discard = false } = {}) {
         if (doc.content !== doc.saved) doc.revision = draft.revision;
       }
     } catch {}
-  } else await writingForget(path);
+  } else if (discard) await writingForget(path);
+  if (cached) writingState.tabs[writingState.tabs.indexOf(cached)] = doc;
+  else writingState.tabs.push(doc);
+  // Reading remains reading when switching between Markdown and LaTeX tabs.
+  const reading = writingMarkdown.reading || writingLatex.reading;
+  writingMarkdown.reading = reading && doc.format === "md";
+  writingLatex.reading = reading && doc.format === "tex";
   writingState.doc = doc; writingState.folder = writingParent(path);
   writingRenderTree(); writingRenderDocument();
+  writingRestoreTab(doc);
 }
 async function writingRefresh() {
   const result = await api("/api/writing");
@@ -352,6 +366,15 @@ function writingSetSidebarCollapsed(collapsed, persist = true) {
     window.dispatchEvent(new Event("resize"));
   });
 }
+function writingSetHeadingCollapsed(collapsed, persist = true) {
+  writingState.headingCollapsed = Boolean(collapsed);
+  const view = $("#writing-view");
+  view.classList.toggle("writing-heading-collapsed", writingState.headingCollapsed);
+  const toggle = $("#writing-heading-toggle");
+  toggle.setAttribute("aria-expanded", String(!writingState.headingCollapsed));
+  toggle.setAttribute("aria-label", writingState.headingCollapsed ? "展开写作顶部栏" : "收起写作顶部栏");
+  if (persist) writeBrowserSetting("writingHeadingCollapsed", String(writingState.headingCollapsed));
+}
 async function writingSwitch(mode) {
   await writingFlush();
   if (mode !== "writing") { ++writingLinks.request; writingLinksDetach(); }
@@ -404,18 +427,23 @@ async function writingSubmit() {
     const created = await api(`/api/writing/document?path=${encodeURIComponent(destination)}`);
     await writingRequest({ operation: "save", path: destination, content: original.content, revision: created.revision });
     await writingForget(original.path);
+    writingState.tabs = writingState.tabs.filter(doc => doc !== original);
     await writingOpen(destination, { discard: true });
   } else {
     await writingFlush();
     if (operation === "trash" || operation === "rename") {
       const parent = $("#writing-parent").value;
       const destination = `${parent ? parent + "/" : ""}${$("#writing-name").value.trim()}`;
-      await writingRequest({ operation, path, destination });
       const current = writingState.doc?.path;
+      await writingRequest({ operation, path, destination });
+      writingMutateTabs(operation, path, destination);
       if (current && (current === path || current.startsWith(path + "/"))) {
         await writingForget(current);
-        if (operation === "trash") writingState.doc = null;
-        else await writingOpen(destination + current.slice(path.length), { discard: true });
+        if (operation === "trash") {
+          writingState.doc = null;
+          if (writingState.tabs.length) await writingOpen(writingState.tabs[0].path);
+        }
+        else await writingOpen(destination + current.slice(path.length));
       }
       writingState.folder = operation === "rename" && kind === "folder" ? destination : writingParent(path);
     } else {
@@ -434,6 +462,7 @@ function writingNewPath(format) {
   return `${parent ? parent + "/" : ""}${name}`;
 }
 function installWriting() {
+  installWritingTabs();
   installWritingLinks();
   installWritingLatex();
   installReadwrite();
@@ -444,6 +473,8 @@ function installWriting() {
   }
   writingState.sidebarCollapsed = readBrowserSetting("writingSidebarCollapsed") === "true";
   writingSetSidebarCollapsed(writingState.sidebarCollapsed, false);
+  writingState.headingCollapsed = readBrowserSetting("writingHeadingCollapsed") === "true";
+  writingSetHeadingCollapsed(writingState.headingCollapsed, false);
   $("#writing-image-input").addEventListener("change", event => {
     if (writingMarkdown.picker === writingState.doc && event.target.files.length) writingMarkdownInsertImages([...event.target.files]);
     event.target.value = "";
@@ -451,6 +482,7 @@ function installWriting() {
   $("#mode-writing").addEventListener("click", () => act(() => writingRun(() => writingSwitch("writing"))));
   $("#mode-reading").addEventListener("click", () => act(() => writingRun(() => writingSwitch("reading"))));
   $("#writing-sidebar-toggle").addEventListener("click", () => writingSetSidebarCollapsed(!writingState.sidebarCollapsed));
+  $("#writing-heading-toggle").addEventListener("click", () => writingSetHeadingCollapsed(!writingState.headingCollapsed));
   $("#writing-new").addEventListener("click", () => writingShowDialog("create"));
   $("#writing-folder").addEventListener("click", () => writingShowDialog("create", "folder"));
   $$("[data-new-writing]").forEach(node => node.addEventListener("click", () => writingShowDialog("create", "file", node.dataset.newWriting)));
@@ -468,6 +500,7 @@ function installWriting() {
     const view = writingState.doc?.format === "tex" ? writingLatex : writingMarkdown;
     writingState.preview = view.reading || !writingState.preview;
     view.reading = false;
+    writingSetHeadingCollapsed(writingState.preview, false);
     writingUpdatePreview();
   });
   $("#writing-reading-open-paper").addEventListener("click", () => readwritePick("paper"));
